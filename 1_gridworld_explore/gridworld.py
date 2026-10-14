@@ -294,5 +294,5 @@ if __name__ == '__main__':
   std_dev = np.std(statistics)
   if opts.episodes > 0:
     pass
-  print(f"Episodes: {opts.episodes+1}, mean: {mean}, standard deviation: {std_dev}")
+  print(f"Episodes: {opts.episodes}, mean: {mean}, standard deviation: {std_dev}")
   print()
