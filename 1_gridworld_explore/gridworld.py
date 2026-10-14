@@ -4,7 +4,7 @@ import mdp
 import environment
 import util
 import optparse
-
+import numpy as np
 from gridworldClass import Gridworld
 
 class GridworldEnvironment(environment.Environment):
@@ -105,6 +105,8 @@ def getUserAction(state, actionFunction):
 # Exercise 1: Implement "return" computation
 def runEpisode(agent, environment, discount, decision, display, message, pause, episode):
   returns = 0
+  k = 0
+  
   environment.reset()
   message("BEGINNING EPISODE: "+str(episode)+"\n")
   while True:
@@ -118,7 +120,7 @@ def runEpisode(agent, environment, discount, decision, display, message, pause, 
     actions = environment.getPossibleActions(state)
     if len(actions) == 0:
       message("EPISODE "+str(episode)+" COMPLETE: RETURN WAS "+str(returns)+"\n")
-      return 0  # TODO: IMPLEMENT "return" obtained in the episode
+      return returns  # TODO: IMPLEMENT "return" obtained in the episode
 
     # GET ACTION (USUALLY FROM AGENT)
     action = decision(state)
@@ -134,9 +136,8 @@ def runEpisode(agent, environment, discount, decision, display, message, pause, 
 
     # UPDATE LEARNER
     agent.update(state, action, nextState, reward)
-
-    # TODO: make sure you compute the returns
-
+    returns += reward * (discount ** k) # TODO: make sure you compute the returns
+    k += 1 
 
 
 def parseOptions():
@@ -285,11 +286,13 @@ if __name__ == '__main__':
 
   # Exercise 1: implement the mean and std of the value estimation for the start state and print it out
   #  check what runEpisode returns
-
+  statistics = np.array([])
   for episode in range(1, opts.episodes+1):
-    runEpisode(a, env, opts.discount, decisionCallback, displayCallback, messageCallback, pauseCallback, episode)
+    returns = runEpisode(a, env, opts.discount, decisionCallback, displayCallback, messageCallback, pauseCallback, episode)
+    statistics = np.append(statistics,returns)
+  mean = np.mean(statistics)
+  std_dev = np.std(statistics)
   if opts.episodes > 0:
-    # print here
     pass
-
+  print(f"Episodes: {opts.episodes+1}, mean: {mean}, standard deviation: {std_dev}")
   print()
