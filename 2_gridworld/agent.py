@@ -1,4 +1,5 @@
 import util, random
+import numpy as np
 ITERATIONS = 0
 class Agent:
 
@@ -77,16 +78,20 @@ class ValueIterationAgent(Agent):
     self.discount = discount
     self.iterations = iterations
     self.values = {}
+    self.startStateValues = np.array([])
     for state in self.mdp.getStates():   
       self.values[state] = 0
     self.startState = self.mdp.getStartState()
     for i in range(iterations):
       self.valueIteration()
-      print(f"Iteration {i+1}: {self.values}\n")
+      self.startStateValues = np.append(self.startStateValues, self.getValue(self.startState))
       if(self.getValue(self.startState)!=0):
         print(f"Iteration:{i+1} ")
         print(f"Value of Start State not zero after {i} iterations")
-    
+    self.mean = np.mean(self.startStateValues)
+    self.std_dev = np.std(self.startStateValues)
+    print(f"Standard Deviation: {self.std_dev}")
+    print(f"Mean: {self.mean}")
     print("Done")
 
 
