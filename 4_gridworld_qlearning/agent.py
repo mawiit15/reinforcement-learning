@@ -1,4 +1,5 @@
 import util, random
+import numpy as np
 
 class Agent:
 
@@ -169,7 +170,7 @@ class QLearningAgent(Agent):
     self.setDiscount(discount)
     self.actionFunction = actionFunction
 
-    raise ValueError("Your code here.")
+    self.q = {}
 
 
 
@@ -192,7 +193,10 @@ class QLearningAgent(Agent):
     Look up the current value of the state.
     """
 
-    raise ValueError("Your code here.")
+    actions = self.actionFunction(state)
+    if not actions:
+        return 0.0
+    return max([self.getQValue(state, a) for a in actions])
 
 
 
@@ -201,7 +205,7 @@ class QLearningAgent(Agent):
     Look up the current q-value of the state action pair.
     """
 
-    raise ValueError("Your code here.")
+    return self.q.get((state, action), 0.0)
 
 
 
@@ -210,7 +214,12 @@ class QLearningAgent(Agent):
     Look up the current recommendation for the state.
     """
 
-    raise ValueError("Your code here.")
+    actions = self.actionFunction(state)
+    if not actions:
+        return None
+    q_val = [self.getQValue(state, a) for a in actions]
+    top = max(q_val)
+    return random.choice([a for a, q in zip(actions, q_val) if q == top])
 
 
 
@@ -220,8 +229,12 @@ class QLearningAgent(Agent):
     exploration and exploitation as appropriate.
     """
 
-    raise ValueError("Your code here.")
-
+    actions = self.actionFunction(state)
+    if not actions:
+      return None
+    if random.random() < self.epsilon:
+      return random.choice(actions)
+    return self.getPolicy(state)
 
 
   def update(self, state, action, nextState, reward):
@@ -229,7 +242,8 @@ class QLearningAgent(Agent):
     Update parameters in response to the observed transition.
     """
 
-    raise ValueError("Your code here.")
+    target = reward + self.discount * self.getValue(nextState)
+    self.q[(state, action)] = (1 - self.learningRate) * self.getQValue(state, action) + self.learningRate * target
 
   def reset(self):
     """
