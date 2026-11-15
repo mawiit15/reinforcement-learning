@@ -1,4 +1,0 @@
-[dependency-groups]
-dev = [
-    "numpy>=2.5.4",
-]
